@@ -92,4 +92,91 @@ function main() {
 	   Ticker.addListener(stage);
 }
 
+// the first two functions are just skeletons for the user to add/enhance if desired
+function handleProgress(event) {
+	// use event.loaded to get the percentage of the loading
+}
 
+function handleComplete(event) {
+	// triggered when all loading is complete
+}
+
+// this function handles image and sound loading;
+function handleFileLoad(event) {
+	// triggered when an individual file completes loading
+	switch (event.type) {
+	case PreloadJS.IMAGE:
+		// an image loaded
+		var img = new Image();
+		img.src = event.src;
+		img.onload = handleLoadComplete;
+		window[event.id] = new Bitmap(img);
+		break;
+		
+	case PreloadJS.SOUND:
+		// sound loaded
+		handleLoadComplete();
+		break;
+	}
+}
+
+function handleLoadComplete(event) {
+	// increment our total loaded assets count
+	totalLoaded++;
+	console.log("Loaded Asset #"+totalLoaded);
+	if (manifest.length == totalLoaded) {
+		// we have loaded all of the listed assets
+		// so - call the main menu
+		addTitleView();
+	}
+}
+
+// creating the main menu
+function addTitleView() {
+	console.log("Adding Title View");
+	// where do these numbers come from?
+	startB.x = 240 - 31.5;
+	startB.y = 160;
+	startB.name = 'startB';
+
+	creditsB.x = 241 - 42;
+	creditsB.y = 200;
+	
+	TitleView.addChild(main, startB, creditsB);
+	stage.addChild(bg, TitleView);
+	stage.update();
+	
+	// Button Listeners
+	
+	startB.onPress = tweenTitleView;
+	creditsB.onPress = showCredits;
+	
+}
+
+
+// display credits
+function showCredits() {
+	credits.x = 480;
+	stage.addChild(credits);
+	stage.update();
+	Tween.get(credits).to({x:0}, 300);
+	credits.onPress = hideCredits;
+}
+
+//Hide Credits
+
+function hideCredits(e) {
+    Tween.get(credits).to({x:480}, 300).call(rmvCredits);
+}
+ 
+// Remove Credits
+function rmvCredits() {
+    stage.removeChild(credits);
+}
+ 
+// Tween Title View
+function tweenTitleView() {       
+    // Start Game
+         
+    Tween.get(TitleView).to({y:-320}, 300).call(addGameView);
+}
